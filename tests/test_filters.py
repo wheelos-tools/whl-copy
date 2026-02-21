@@ -1,6 +1,7 @@
 """Unit tests for autocopy_tool.modules.filters."""
+import datetime
 import pytest
-from autocopy_tool.modules.filters import build_source_path
+from autocopy_tool.modules.filters import build_filter_args, build_source_path
 
 
 @pytest.fixture()
@@ -51,3 +52,40 @@ def test_build_source_path_coredump(cfg):
 def test_build_source_path_unknown_type_raises(cfg):
     with pytest.raises(KeyError):
         build_source_path(cfg, "unknown")
+
+
+# ---------- build_filter_args ----------
+
+def test_build_filter_args_empty_rule():
+    assert build_filter_args({}) == []
+
+
+def test_build_filter_args_min_size():
+    args = build_filter_args({"min_size": "1k"})
+    assert "--min-size=1k" in args
+
+
+def test_build_filter_args_max_size():
+    args = build_filter_args({"max_size": "500m"})
+    assert "--max-size=500m" in args
+
+
+def test_build_filter_args_min_and_max():
+    args = build_filter_args({"min_size": "1k", "max_size": "500m"})
+    assert "--min-size=1k" in args
+    assert "--max-size=500m" in args
+
+
+def test_build_filter_args_newer_than():
+    args = build_filter_args({"newer_than": 7})
+    assert len(args) == 1
+    assert args[0].startswith("--newer=")
+    # The date should be 7 days ago
+    cutoff = (datetime.date.today() - datetime.timedelta(days=7)).isoformat()
+    assert args[0] == f"--newer={cutoff}"
+
+
+def test_build_filter_args_combined():
+    args = build_filter_args({"min_size": "1m", "newer_than": 30})
+    assert "--min-size=1m" in args
+    assert any(a.startswith("--newer=") for a in args)
