@@ -1,0 +1,25 @@
+source:
+  type: network
+  base_path: /mnt/autodrive_data
+  host: 10.10.10.5
+  username: tester
+  # password: secret  # Not recommended; prefer SSH key authentication
+  # ssh_key: ~/.ssh/id_rsa
+  protocol: rsync
+
+targets:
+  - /data/test_today/
+
+rules:
+  log:
+    path: log/
+    filter: "{module}/{date}"
+  bag:
+    path: bag/
+    filter: "{date}"
+  map:
+    path: map/
+    filter: "{name}"
+  conf:
+    path: conf/
+    filter: "{name}"
