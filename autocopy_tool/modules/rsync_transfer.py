@@ -16,6 +16,7 @@ def rsync_copy(
     user: str,
     ssh_key: Optional[str] = None,
     extra_args: Optional[list] = None,
+    resume: bool = True,
 ) -> None:
     """Transfer files from a remote host using rsync over SSH.
 
@@ -26,6 +27,9 @@ def rsync_copy(
         user: Remote username.
         ssh_key: Optional path to an SSH private key file.
         extra_args: Optional list of additional rsync arguments.
+        resume: When ``True`` (default) pass ``--partial`` to rsync so that
+            interrupted transfers can be resumed without re-sending completed
+            chunks.
 
     Raises:
         subprocess.CalledProcessError: If rsync exits with a non-zero status.
@@ -41,7 +45,10 @@ def rsync_copy(
     # user@host:src is passed as a single list element – subprocess does not
     # invoke a shell, so special characters in the individual arguments do not
     # enable command injection via shell word splitting.
-    cmd = ["rsync", "-avz", "--progress", f"-e={ssh_cmd}", f"{user}@{host}:{src}", dst]
+    cmd = ["rsync", "-avz", "--progress"]
+    if resume:
+        cmd.append("--partial")
+    cmd += [f"-e={ssh_cmd}", f"{user}@{host}:{src}", dst]
     if extra_args:
         cmd.extend(extra_args)
 

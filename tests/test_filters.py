@@ -12,6 +12,7 @@ def cfg():
             "bag": {"path": "bag/", "filter": "{date}"},
             "map": {"path": "map/", "filter": "{name}"},
             "conf": {"path": "conf/", "filter": "{name}"},
+            "coredump": {"path": "coredump/", "filter": "{date}"},
         },
     }
 
@@ -40,6 +41,11 @@ def test_build_source_path_missing_optional_key_defaults_empty(cfg):
     """Missing optional keys (e.g. module) should default to empty string."""
     path = build_source_path(cfg, "log", date="2025-11-04")
     assert path == "/mnt/autodrive_data/log/2025-11-04"
+
+
+def test_build_source_path_coredump(cfg):
+    path = build_source_path(cfg, "coredump", date="2025-11-04")
+    assert path == "/mnt/autodrive_data/coredump/2025-11-04"
 
 
 def test_build_source_path_unknown_type_raises(cfg):

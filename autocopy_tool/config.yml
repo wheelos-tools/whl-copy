@@ -10,6 +10,12 @@ source:
 targets:
   - /data/test_today/
 
+# logging configuration
+logging:
+  file: logs/autocopy.log   # rotating log file path (relative or absolute)
+  max_bytes: 10485760       # 10 MB per file
+  backup_count: 5
+
 rules:
   log:
     path: log/
@@ -23,3 +29,6 @@ rules:
   conf:
     path: conf/
     filter: "{name}"
+  coredump:
+    path: coredump/
+    filter: "{date}"
