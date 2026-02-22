@@ -1,0 +1,10 @@
+filter_types:
+  Logs:
+    - "*.log"
+    - "*.txt"
+
+presets:
+  - name: 当天日志
+    filter_type: Logs
+    time_range: today
+    min_size_bytes: 0

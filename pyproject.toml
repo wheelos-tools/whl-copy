@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whl-copy"
+version = "0.1.0"
+description = "Wizard-driven universal copy tool"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "PyYAML>=6.0",
+  "questionary>=2.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+whl-copy = "whl_copy.main:cli"
+
+[tool.setuptools.packages.find]
+include = ["whl_copy*"]

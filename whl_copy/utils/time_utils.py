@@ -1,4 +1,4 @@
-"""Date and time utilities for autocopy_tool."""
+"""Date and time utilities for `whl_copy`."""
 import datetime
 
 

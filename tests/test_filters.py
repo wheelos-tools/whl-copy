@@ -1,7 +1,7 @@
-"""Unit tests for autocopy_tool.modules.filters."""
+"""Unit tests for whl_copy.modules.filters."""
 import datetime
 import pytest
-from autocopy_tool.modules.filters import build_filter_args, build_source_path
+from whl_copy.modules.filters import build_filter_args, build_source_path
 
 
 @pytest.fixture()

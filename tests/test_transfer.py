@@ -1,7 +1,7 @@
-"""Unit tests for autocopy_tool.modules.local_transfer."""
+"""Unit tests for whl_copy.modules.local_transfer."""
 import os
 import pytest
-from autocopy_tool.modules.local_transfer import local_copy
+from whl_copy.modules.local_transfer import local_copy
 
 
 def test_local_copy_file(tmp_path):

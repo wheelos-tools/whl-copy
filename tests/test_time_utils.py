@@ -1,7 +1,7 @@
-"""Unit tests for autocopy_tool.utils.time_utils."""
+"""Unit tests for whl_copy.utils.time_utils."""
 import datetime
 import pytest
-from autocopy_tool.utils.time_utils import today, validate_date
+from whl_copy.utils.time_utils import today, validate_date
 
 
 def test_today_format():

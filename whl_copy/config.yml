@@ -1,0 +1,51 @@
+source:
+  base_path: .
+
+# destination is used by the 'push' subcommand when pushing to a remote machine.
+# Leave this section out (or omit host) to push to a local path (e.g. USB drive).
+destination:
+  # host: 192.168.1.100
+  # username: engineer
+  # ssh_key: ~/.ssh/id_rsa
+  path: /mnt/usb_drive
+  base_path: data/test_today
+
+remote_candidates:
+  - host: 10.10.10.5
+    username: tester
+    protocol: rsync
+    base_path: /mnt/autodrive_data
+    # ssh_key: ~/.ssh/id_rsa
+
+custom_endpoints:
+  - /tmp/custom-copy-path
+
+bos:
+  buckets:
+    - name: wheelos-logs
+      prefix: daily
+
+wizard:
+  estimated_speed_mbps: 80
+
+logging:
+  file: logs/autocopy.log
+  max_bytes: 10485760
+  backup_count: 5
+
+rules:
+  log:
+    path: log/
+    filter: "{module}/{date}"
+  bag:
+    path: bag/
+    filter: "{date}"
+  map:
+    path: map/
+    filter: "{name}"
+  conf:
+    path: conf/
+    filter: "{name}"
+  coredump:
+    path: coredump/
+    filter: "{date}"
