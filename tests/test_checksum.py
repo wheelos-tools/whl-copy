@@ -1,6 +1,6 @@
-"""Unit tests for whl_copy.modules.checksum."""
+"""Unit tests for whl_copy.core.checksum."""
 import pytest
-from whl_copy.modules.checksum import compute_checksum, verify_directory
+from whl_copy.core.checksum import compute_checksum, verify_directory
 
 
 def test_compute_checksum_sha256(tmp_path):

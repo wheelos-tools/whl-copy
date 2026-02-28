@@ -1,7 +1,7 @@
-"""Unit tests for whl_copy.modules.local_transfer."""
+"""Unit tests for local transfer operations."""
 import os
 import pytest
-from whl_copy.modules.local_transfer import local_copy
+from whl_copy.storage.operations import local_copy
 
 
 def test_local_copy_file(tmp_path):

@@ -1,22 +1,12 @@
-"""Source directory scanner for whl_copy.
+"""Source scanner and preview helpers."""
 
-Scans a source base path against the rules defined in the config file and
-reports which expected paths exist and which are missing.
-
-Only local (mounted) source scanning is supported; remote (pull) scanning
-has been removed in push-only mode.
-"""
-import shlex
-import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Tuple
 
-from whl_copy.modules.filters import build_source_path
+from whl_copy.policies.filtering import FilterEngine
 from whl_copy.utils.logger import get_logger
 
 logger = get_logger(__name__)
-
-_DATA_TYPES = ("log", "bag", "map", "conf", "coredump")
 
 
 def scan_source(
@@ -37,7 +27,7 @@ def scan_source(
             continue
 
         try:
-            expected = Path(build_source_path(cfg, dtype, **filter_kwargs))
+            expected = Path(FilterEngine.build_source_path(cfg, dtype, **filter_kwargs))
         except KeyError:
             logger.warning("Cannot build path for data type: %s", dtype)
             results[dtype] = []
@@ -49,9 +39,7 @@ def scan_source(
             else:
                 found = [str(expected)]
             results[dtype] = found
-            logger.info(
-                "[%s] Found %d item(s) at %s", dtype, len(found), expected
-            )
+            logger.info("[%s] Found %d item(s) at %s", dtype, len(found), expected)
         else:
             type_root = base / rules[dtype]["path"]
             if type_root.is_dir():
@@ -75,8 +63,40 @@ def report_scan(results: Dict[str, List[str]]) -> None:
     for dtype, paths in results.items():
         if paths:
             print(f"\n[{dtype}] {len(paths)} item(s) found:")
-            for p in paths:
-                print(f"  {p}")
+            for path in paths:
+                print(f"  {path}")
         else:
             print(f"\n[{dtype}] ⚠  No data found")
     print()
+
+
+def preview_source_files(
+    source: str,
+    patterns: List[str],
+    time_range: str = "unlimited",
+    size_limit_str: int = 0,
+    limit: int = 50,
+) -> Tuple[List[Path], int]:
+    source_path = Path(source).expanduser()
+    if not source_path.exists():
+        return [], 0
+
+    candidates = [source_path] if source_path.is_file() else list(source_path.rglob("*"))
+    files = [item for item in candidates if item.is_file()]
+
+    min_modified_time = FilterEngine.resolve_min_modified_time(time_range)
+    matched: List[Path] = []
+    total_bytes = 0
+
+    for file_path in files:
+        if not FilterEngine.matches_file_constraints(
+            file_path=file_path,
+            patterns=patterns,
+            size_limit_str=size_limit_str,
+            min_modified_time=min_modified_time,
+        ):
+            continue
+        matched.append(file_path)
+        total_bytes += file_path.stat().st_size
+
+    return matched[:limit], total_bytes

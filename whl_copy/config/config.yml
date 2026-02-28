@@ -1,0 +1,12 @@
+bos:
+  buckets:
+    - name: wheelos-logs
+      prefix: daily
+
+wizard:
+  estimated_speed_mbps: 80
+
+logging:
+  file: logs/autocopy.log
+  max_bytes: 10485760
+  backup_count: 5

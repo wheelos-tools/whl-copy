@@ -71,25 +71,25 @@ class QuestionaryAdapter(PromptAdapter):
         return self.questionary.select(
             message,
             choices=choices,
-            default=choices[default_index],
+            default=choices[default_index], qmark="",
         ).ask() or choices[default_index]
 
     def multi_select(self, message: str, choices: List[str], default_selected: Optional[List[str]] = None) -> List[str]:
         # Use questionary's checkbox for multi-selection (arrow/space to toggle).
         defaults = list(default_selected or [])
         if defaults:
-            result = self.questionary.checkbox(message, choices=choices, default=defaults).ask()
+            result = self.questionary.checkbox(message, choices=choices, default=defaults, qmark="").ask()
         else:
             # Avoid passing an empty default list which some questionary versions
             # treat as an invalid default value.
-            result = self.questionary.checkbox(message, choices=choices).ask()
+            result = self.questionary.checkbox(message, choices=choices, qmark="").ask()
         return list(result or [])
 
     def text(self, message: str, default: str = "") -> str:
-        return self.questionary.text(message, default=default).ask() or default
+        return self.questionary.text(message, default=default, qmark="").ask() or default
 
     def confirm(self, message: str, default: bool = True) -> bool:
-        return bool(self.questionary.confirm(message, default=default).ask())
+        return bool(self.questionary.confirm(message, default=default, qmark="").ask())
 
 
 def build_prompt_adapter(prefer_questionary: bool = True) -> PromptAdapter:
