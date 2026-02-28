@@ -1,81 +1,73 @@
-# whl-copy
 
-Universal copy tool with wizard + profile mode only.
+# universal-copy-wizard (whl-copy)
 
-## CLI Modes
+An intelligent file copying and distribution wizard for local drives, remote SSH targets, and cloud object storage.
 
-- `whl-copy`: interactive wizard (`Source -> Destination -> Filter -> Preview -> Execute`)
-- `whl-copy --fast`: use last `.whl_copy_state.json` plan and run without prompts
-- `whl-copy --profile <name>`: run a named saved profile directly
-
-## Proposed Python Structure
-
-```text
-whl_copy/
-	main.py                     # wizard-only CLI entry
-  wizard.py                   # Wizard orchestration pipeline
-	presets.yml                 # Preset/custom profile templates (YAML)
-  config.yml                  # Runtime configuration
-  core/
-	 models.py                 # Profile / State models
-	 profile_store.py          # Preset/profile YAML store
-	 state_store.py            # Local persistent state read/write
-  modules/
-	 address_discovery.py      # Pluggable storage detectors (disk/usb/ssh/bos/custom)
-	 filters.py                # Path and rule filters
-	 scanner.py                # Data scan helpers
-	 local_transfer.py         # Local copy executor
-	 rsync_transfer.py         # Remote copy executor
-	 checksum.py               # Verification helpers
-  utils/
-	 logger.py
-	 time_utils.py
-tests/
-```
-
-## Wizard Workflow
-
-1. Source Selection
-	- source is local working directory only
-	- default to last source or current working directory
-2. Destination Selection
-	- scan mounted disks / USB / remote SSH / BOS / custom endpoints
-	- choose destination device and save directory
-3. Filter Pipeline
-	- choose preset (`当天数据`, `近1小时抓包`, `全量配置`) or `自定义过滤`
-	- custom filter type/pattern comes from YAML templates
-	- time range (`近1小时`, `今天`, `不限`) and size (`1K`, `1M`, `1G`, `不限`)
-	- preview matched files and estimated total size
-4. Execution
-	- ask `是否保存配置? (Y/n)` and save as named profile
-	- confirm with `Proceed with copy? (Y/n)`
-	- execute copy, print size and estimated time, then progress bar
-	- remote destination uses scp-like address `user@host:/path` (only destination address needed)
-
-## Template vs State (分离)
-
-- Template config: [whl_copy/presets.yml](whl_copy/presets.yml)
-  - `filter_types`, `presets`, `named_profiles`
-- History state: `~/.whl_copy_state.json`
-  - `last_source`, `last_dest`, `last_filter_type`, `last_plan`
-
-## Interaction Library
-
-- Preferred: `questionary` (better menu/confirm/text UX)
-- Fallback: built-in `input/print` if `questionary` is not installed
-
-## Install & Verify
-
-```bash
-pip install -e .
-whl-copy --help
-whl-copy
-```
+## Features
+- Interactive CLI wizard for source/destination selection
+- Auto-discovers local, remote, and cloud endpoints
+- Filter presets and custom file selection
+- Job saving and repeatable syncs
+- Professional, English-only UI
 
 ## Quick Start
 
-```bash
-python -m whl_copy.main
-python -m whl_copy.main --fast
-python -m whl_copy.main --profile 当天日志方案
+1. **Install dependencies** (Python 3.8+ required):
+	 ```bash
+	 pip install -r requirements.txt
+	 ```
+
+2. **Run the wizard:**
+	 ```bash
+	 python -m whl_copy.main
+	 ```
+
+3. **Follow the prompts:**
+	 - Select operation: Run a saved job or create a new one
+	 - Choose source and destination endpoints (local, remote, or cloud)
+	 - Select a filter preset or define custom file filters
+	 - Review the file preview and estimated transfer size/time
+	 - Confirm to start the sync
+
+4. **Saved jobs** can be rerun from the main menu for fast repeat operations.
+
+## Example CLI Flow
+
 ```
+=== Whl-Copy Sync Manager (Bidirectional) ===
+Select operation:
+	1) [Run] Execute a saved Sync Job (Skip config)
+	2) [New] Create new Sync Job (Save for future)
+	3) [Quit] Exit manager
+
+--- Storage Endpoint Selection ---
+Select Source (From):
+	1) [Saved] MyLocal (/home/user)
+	2) [Discovered: local] Local Home: /home/user (/home/user)
+	3) [Manual] Enter a custom path
+
+Select Destination (To):
+	1) [Saved] MyNAS (nas:/data)
+	2) [Discovered: remote] NAS: /data (nas:/data)
+	3) [Manual] Enter a custom path
+
+[Step] Select Filter Strategy
+Select Filter Preset:
+	1) [Preset] Documents (*.pdf, *.docx)
+	2) [Preset] Media (*.mp4, *.jpg)
+	3) [Custom] Create new filter...
+
+Matched files (showing up to 50): 12
+	- /home/user/Documents/file1.pdf
+	...
+Estimated transfer size: 1.2 GB
+Estimated transfer time: 2m 30s
+
+Proceed with sync? (Y/n)
+```
+
+## Configuration
+- Edit `whl_copy/config.yml` and `whl_copy/presets.yml` to customize endpoints and filter presets.
+
+## License
+See LICENSE for details.

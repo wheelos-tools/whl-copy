@@ -1,4 +1,5 @@
 """File integrity verification using MD5 or SHA256 checksums."""
+
 import hashlib
 from pathlib import Path
 from typing import Literal
@@ -17,16 +18,16 @@ def compute_checksum(path: str, algorithm: HashAlgorithm = "sha256") -> str:
         raise FileNotFoundError(f"File not found: {path}")
 
     if algorithm == "sha256":
-        h = hashlib.sha256()
+        hasher = hashlib.sha256()
     elif algorithm == "md5":
-        h = hashlib.md5()
+        hasher = hashlib.md5()
     else:
         raise ValueError(f"Unsupported algorithm: {algorithm!r}.")
 
-    with open(file_path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(_CHUNK_SIZE), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    with open(file_path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(_CHUNK_SIZE), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
 
 
 def verify_directory(src_dir: str, dst_dir: str, algorithm: HashAlgorithm = "sha256") -> bool:
@@ -40,17 +41,27 @@ def verify_directory(src_dir: str, dst_dir: str, algorithm: HashAlgorithm = "sha
     for dst_file in sorted(dst_root.rglob("*")):
         if not dst_file.is_file():
             continue
-        rel = dst_file.relative_to(dst_root)
-        src_file = src_root / rel
+
+        relative = dst_file.relative_to(dst_root)
+        src_file = src_root / relative
+
         if not src_file.is_file():
             logger.warning("Source file missing for verification: %s", src_file)
             all_ok = False
             continue
+
         src_hash = compute_checksum(str(src_file), algorithm)
         dst_hash = compute_checksum(str(dst_file), algorithm)
         if src_hash != dst_hash:
-            logger.error("Checksum mismatch [%s]: %s (src=%s, dst=%s)", algorithm, rel, src_hash, dst_hash)
+            logger.error(
+                "Checksum mismatch [%s]: %s (src=%s, dst=%s)",
+                algorithm,
+                relative,
+                src_hash,
+                dst_hash,
+            )
             all_ok = False
         else:
-            logger.debug("OK [%s]: %s", algorithm, rel)
+            logger.debug("OK [%s]: %s", algorithm, relative)
+
     return all_ok

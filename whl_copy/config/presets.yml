@@ -1,10 +1,10 @@
-filter_types:
+profiles:
   Logs:
     - "*.log"
     - "*.txt"
 
 presets:
-  - name: 当天日志
+  - name: "Today's Logs"
     filter_type: Logs
     time_range: today
     min_size_bytes: 0

@@ -1,8 +1,6 @@
-"""Unit tests for whl_copy.modules.scanner."""
-import subprocess
-from unittest.mock import patch, MagicMock
+"""Unit tests for whl_copy.core.scanner."""
 import pytest
-from whl_copy.modules.scanner import scan_source, report_scan
+from whl_copy.core.scanner import preview_source_files, report_scan, scan_source
 
 
 @pytest.fixture()
@@ -54,4 +52,23 @@ def test_report_scan_runs_without_error(capsys):
     assert "bag" in out
     assert "log" in out
     assert "No data found" in out
+
+
+def test_preview_source_files_filters_and_totals(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "a.log").write_text("aaaa")
+    (src / "b.log").write_text("b")
+    (src / "c.txt").write_text("cccc")
+
+    files, total = preview_source_files(
+        source=str(src),
+        patterns=["*.log"],
+        size_limit_str=2,
+        time_range="unlimited",
+        limit=50,
+    )
+
+    assert [f.name for f in files] == ["a.log"]
+    assert total == 4
 
