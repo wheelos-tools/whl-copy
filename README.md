@@ -1,5 +1,5 @@
 
-# universal-copy-wizard (whl-copy)
+# whl-copy
 
 An intelligent file copying and distribution wizard for local drives, remote SSH targets, and cloud object storage.
 
@@ -12,29 +12,33 @@ An intelligent file copying and distribution wizard for local drives, remote SSH
 
 ## Quick Start
 
-1. **Install dependencies** (Python 3.8+ required):
-	 ```bash
-	 pip install -r requirements.txt
-	 ```
+1. Install from PyPI:
 
-2. **Run the wizard:**
-	 ```bash
-	 python -m whl_copy.main
-	 ```
+```bash
+pip install whl-copy
+```
 
-3. **Follow the prompts:**
-	 - Select operation: Run a saved job or create a new one
-	 - Choose source and destination endpoints (local, remote, or cloud)
-	 - Select a filter preset or define custom file filters
-	 - Review the file preview and estimated transfer size/time
-	 - Confirm to start the sync
+2. Run the wizard:
 
-4. **Saved jobs** can be rerun from the main menu for fast repeat operations.
+```bash
+whl-copy
+```
+
+3. First run and configuration:
+
+- On first run the tool will create `~/.whl_copy/` and copy default configuration files there (`config.yml`, `presets.yml`).
+- To override defaults, pass explicit paths to the console script:
+
+```bash
+whl-copy --config /path/to/config.yml --presets-file /path/to/presets.yml --state-file /path/to/state.json
+```
+
+4. Use the interactive prompts to create or run sync jobs. Saved jobs, endpoints and history are stored under `~/.whl_copy/`.
 
 ## Example CLI Flow
 
 ```
-=== Whl-Copy Sync Manager (Bidirectional) ===
+=== Whl-Copy Sync Manager ===
 Select operation:
 	1) [Run] Execute a saved Sync Job (Skip config)
 	2) [New] Create new Sync Job (Save for future)
